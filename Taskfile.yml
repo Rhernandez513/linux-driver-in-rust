@@ -1,0 +1,33 @@
+# Taskfile.yml
+version: '3'
+
+tasks:
+  build:
+    dir: app
+    cmds:
+      - task build
+    silent: false
+
+  run:
+    dir: app
+    cmds:
+      - task run
+    silent: false
+
+  clean:
+    cmds:
+      - rm -rf target
+      - task app-clean
+    silent: false
+  
+  app-clean:
+    dir: app
+    cmds:
+      - task clean
+    silent: true
+
+  test:
+    cmds:
+      - echo "Test"
+      - cargo test
+    silent: false
