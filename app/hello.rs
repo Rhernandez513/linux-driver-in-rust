@@ -13,4 +13,5 @@ pub(crate) fn hello() {
 // with a unit test
 #[allow(dead_code)]
 fn main() {
+    hello();
 }
