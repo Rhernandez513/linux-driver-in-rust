@@ -27,7 +27,7 @@
 	"customizations": {
 		"vscode": {
 			"extensions": [
-				"rust-lang.rust"
+				"rust-lang.rust-analyzer"
 			],
 			"settings": {
 				"rust-client.rust-analyzer": {
