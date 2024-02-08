@@ -1,0 +1,13 @@
+[package]
+name = "LINUX_DRIVER_IN_RUST"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+
+[workspace]
+
+[[test]]
+name = "test_hello_world"
+path = "tests/test_hello.rs"
+harness = false
