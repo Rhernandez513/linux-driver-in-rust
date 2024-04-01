@@ -8,7 +8,7 @@ edition = "2021"
 [workspace]
 
 [[bin]]
-name = "hello_worl"
+name = "hello_world"
 path = "app/hello.rs"
 
 [[test]]
