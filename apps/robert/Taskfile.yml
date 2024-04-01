@@ -1,0 +1,25 @@
+# Taskfile.yml
+version: '3'
+
+tasks:
+  build:
+    sources:
+      - lkp-enc-app.c
+      - Makefile
+    generates:
+      - lkp-enc-app
+    cmds:
+      - make
+    silent: false
+  run:
+    sources:
+      - lkp-enc-app
+    cmds:
+      - ./lkp-enc-app
+    silent: false
+  clean:
+    sources:
+      - lkp-enc-app
+    cmds:
+      - rm lkp-enc-app
+    silent: true
