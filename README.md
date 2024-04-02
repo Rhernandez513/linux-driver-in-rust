@@ -19,7 +19,7 @@ To run the compiled Rust program
 
 ```sh
 task run
-
+```
 
 To clean up and remove the compiled executable
 
@@ -34,9 +34,9 @@ task test
 ```
 
 ## Rust-for-Linux env setup
-1. Download the fork of linux from Rust-for-Linux: `git clone --depth=1 https://github.com/Rust-for-Linux/linux.git`
-2. Download busybox: `git clone --depth=1 https://github.com/mirror/busybox.git`
-3. Install clang and llvm: `sudo apt install clang llvm lld`
+1. Download the fork of linux from Rust-for-Linux: `git clone --depth=1 https://github.com/Rust-for-Linux/linux.git` 
+> Module/driver support written in Rust was integrated since kernel 6.1, all the concepts written here are applicable into any version greater or equal to 6.1
+3. Install clang, llvm and lld: `sudo apt install clang llvm lld`
 4. Install Rust: `curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh`
 5. Update the path with `source ~/.cargo/env` or `source $HOME/.cargo/env`
 6. Set the required rust version used for the current kernel with `rustup override set $(scripts/min-tool-version.sh rustc)`
@@ -49,17 +49,19 @@ task test
 12. To automatically format the rust code use `make LLVM=1 -j4 rustfmt`
 13. To generate documentation run `make LLVM=1 -j4 rustdoc` for ease of development. To browse it go to rust/doc/kernel/index.html
 
-1. Go to busybox `cd ../.busybox` assuming you are in the linux dir
+## Busybox lightweight image config
+1. Download busybox: `git clone --depth=1 https://github.com/mirror/busybox.git`
+1. Go to busybox `cd busybox`
 2. Run `make defconfig`
 3. Run `make menuconfig` and enable "Build static library" under Settings-->Build
 4. Build busy box with `make -j4`
 5. Run `make install`
-6. Run `cd _install` and run `find . | cpio -H newc -o | gzip > ../ramdisk.img` to create the image
-mkdir etc
-cp ../examples/inittab ./etc
-vim etc/inittab and comment tty2 to tty5
-mkdir -p etc/init.d/
-vim etc/init.d/rcS and write into it 
+6. Go into `cd _install`
+7. Run `mkdir etc`
+8. Run `cp ../examples/inittab ./etc`
+9. Run `vim etc/inittab` and comment out tty2 to tty5
+10. Run `mkdir -p etc/init.d/`
+11. Run `vim etc/init.d/rcS` and write into it
 ```
 mkdir proc
 mount -t proc none /proc
@@ -71,10 +73,15 @@ mkdir dev/pts
 mount -t devpts nodev /dev/pts
 telnetd -l /bin/sh
 ```
-Make it executable with `chmod a+x etc/init.d/rcS`
-mkdir -p usr/share/udhcpc
-cp ../examples/udhcp/ simple.script usr/share/udhcpc/default.script
-
-
-Boot the image moving to ../../linux and running `qemu-system-x86_64 -nographic -kernel vmlinux -initrd ../busybox/ramdisk.img -nic user,model=rtl8139,hostfwd=tcp::5555-:23,hostfwd=tcp::5556-:8080`
+12. Make it executable with `chmod a+x etc/init.d/rcS`
+13. Run `mkdir -p usr/share/udhcpc`
+14. Run `cp ../examples/udhcp/simple.script usr/share/udhcpc/default.script`
+15. Run `find . | cpio -H newc -o | gzip > ../ramdisk.img` to create the image
+16. Boot the image running 
+```sh
+qemu-system-x86_64 -nographic \
+-kernel $LINUX_PATH/vmlinux \
+-initrd $BUSYBOX_PATH/ramdisk.img \
+-nic user,model=rtl8139,hostfwd=tcp::5555-:23,hostfwd=tcp::5556-:8080
+```
 
