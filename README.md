@@ -35,7 +35,7 @@ task test
 
 ## Rust-for-Linux env setup
 1. Download the fork of linux from Rust-for-Linux: `git clone --depth=1 https://github.com/Rust-for-Linux/linux.git` 
-> Module/driver support written in Rust was integrated since kernel 6.1, all the concepts written here are applicable into any version greater or equal to 6.1
+> Module/driver support written in Rust was integrated in kernel 6.1, all the concepts written here are applicable into any version greater or equal to 6.1
 3. Install clang, llvm and lld: `sudo apt install clang llvm lld`
 4. Install Rust: `curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh`
 5. Update the path with `source ~/.cargo/env` or `source $HOME/.cargo/env`
