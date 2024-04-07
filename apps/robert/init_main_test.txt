@@ -1,0 +1,47 @@
+/*
+ * for /linux/init/main.c
+ * in the kernal_init function
+ * after the call to do_sysctl_args();
+ */
+
+printk("------------------------------------------------------------------\n");
+printk("BEGIN LKP-ENC TEST\n");
+printk("------------------------------------------------------------------\n");
+
+// Map the area of physical memory corresponding to the device's registers
+// (starting 0xfebf1000, size 4KB) somewhere in virtual memory at address
+// devmem. Notice that the physical memory where the device's registers are
+// present may be different on your computer, use lspci -v in the VM to
+// find it
+devmem = ioremap(0xfebf2000, 4096);
+strdata_lkpenc = "Hello World, this is a test string for LKP-ENC";
+
+if(devmem) {
+
+    iowrite32(2, devmem);
+
+    i = 0;
+    while(strdata_lkpenc[i] != '\0') {
+        // We start from 1 as the first byte is the encryption key
+        iowrite32((int) strdata_lkpenc[i], (devmem + i + 1));
+        i++;
+    }
+
+    data = ioread32(devmem);
+    printk("encryption key returned from ioread32 as int: %u", data);
+
+    // We start from 1 as the first byte is the encryption key
+    i = 1;
+    while ((char) data != '\0') {
+        data = ioread32(devmem+i);
+        printk("data returned from ioread32 as char: %c\n", (char) data);
+        i++;
+    }
+} else {
+    printk("ERROR: cannot map device registers\n");
+}
+
+printk("------------------------------------------------------------------\n");
+printk("END LKP-ENC TEST\n");
+printk("------------------------------------------------------------------\n");
+
