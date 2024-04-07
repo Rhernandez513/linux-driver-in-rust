@@ -1,0 +1,34 @@
+syzkaller# uname -a
+Linux syzkaller 6.1.72 #63 SMP PREEMPT_DYNAMIC Mon Mar 25 21:30:39 MDT 2024 x86_64 GNU/Linux
+syzkaller# ./lkp-enc-app
+USERSPACE: Initial Encryption key: 2
+USERSPACE: Initial String data: Hello World
+USERSPACE: Device file opened successfully
+USERSPACE: writing encryption key to device driver
+[  323.500812] copying data to userspace
+[  332.792176] IN LKP_ENC_IOCTL_RKEY, writing data to device
+[  332.792349] copying data from userspace
+USERSPACE: writing string to device driver
+[  332.792349] writing data to device
+[  332.794367] IN LKP_ENC_IOCTL_WCH, writing data to device
+USERSPACE: reading string from device driver
+[  332.795161] copying data from userspace
+[  332.796579] IN LKP_ENC_IOCTL_RCH, reading data from device
+[  332.797396] data returned from ioread32 as char: J
+[  332.797396] data returned from ioread32 as char: g
+[  332.797396] data returned from ioread32 as char: n
+[  332.797396] data returned from ioread32 as char: n
+[  332.797396] data returned from ioread32 as char: q
+[  332.797396] data returned from ioread32 as char:  
+[  332.797396] data returned from ioread32 as char: Y
+[  332.797396] data returned from ioread32 as char: q
+[  332.797396] data returned from ioread32 as char: t
+[  332.797396] data returned from ioread32 as char: n
+[  332.797396] data returned from ioread32 as char: f
+[  332.797396] data returned from ioread32 as char: 
+USERSPACE: String data from device driver: Jgnnq Yqtnf
+USERSPACE: reading encryption key from device driver
+[  332.797396] copying data to userspace
+[  332.806173] IN LKP_ENC_IOCTL_RKEY, reading data from device
+USERSPACE: Encryption key from device driver: 2
+syzkaller# 
