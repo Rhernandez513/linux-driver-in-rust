@@ -4,6 +4,7 @@
 
 use core::result::Result::Ok;
 use core::ffi::c_void;
+use kernel::sync::Mutex;
 use kernel::bindings;
 use kernel::{
     ioctl::{_IOR, _IOW}, prelude::*, Module
@@ -23,12 +24,15 @@ const LKP_ENC_WRITE_SEED: u32 = _IOW::<u64>('q' as u32, 1);
 const LKP_ENC_WRITE_STRING: u32 = _IOW::<&str>('q' as u32, 2);
 const LKP_ENC_READ_STRING: u32 = _IOR::<&str>('q' as u32, 3);
 
+static DEVMEM: Mutex<usize> = unsafe {
+    Mutex::new(0)
+};
+
 #[allow(dead_code)]
 const DEVICE_BASE_PHYS_ADDR: u64 = 0xfebd1000;
 
 struct LkpEnc {
     _dev: Pin<Box<chrdev::Registration<1>>>,
-    _devmem: usize,
     // _dev: Pin<Box<miscdev::Registration<LkpEnc>>>,
 }
 
@@ -63,7 +67,8 @@ impl file::Operations for LkpEnc {
 
     fn ioctl(_data: <Self::Data as kernel::ForeignOwnable>::Borrowed<'_>,_file: &file::File,cmd: &mut file::IoctlCommand,) -> Result<i32> {
         pr_info!("qemu file ioctl\n");
-
+        pr_info!("devmem {:?}", *DEVMEM.lock());
+        
         match cmd.raw().0 {
             LKP_ENC_WRITE_SEED => {
                 let seed = cmd.raw().1;
@@ -92,7 +97,9 @@ impl Module for LkpEnc {
         let addr = unsafe { bindings::ioremap(DEVICE_BASE_PHYS_ADDR, 4096) };
         
         // devmem know contains the address mapped in the CPU of the device
-        let devmem: usize = if addr.is_null() {
+
+        let mut ptr = DEVMEM.lock();
+        *ptr = if addr.is_null() {
             Err(ENOMEM)
         } else {
             // INVARIANT: `addr` is non-null and was returned by `ioremap`, so it is valid. It is
@@ -100,7 +107,7 @@ impl Module for LkpEnc {
             Ok(addr as usize)
         }?;
 
-        pr_info!("devmem: {:?}", devmem);
+        pr_info!("devmem: {:?}", *ptr);
 
         let mut chardev_reg = chrdev::Registration::new_pinned(name, 0, module)?;
         chardev_reg.as_mut().register::<LkpEnc>()?;
@@ -109,13 +116,13 @@ impl Module for LkpEnc {
         pr_info!("LKP_ENC_READ_STRING: {:?}", LKP_ENC_READ_STRING);
         pr_info!("LKP_ENC_WRITE_STRING: {:?}", LKP_ENC_WRITE_STRING);
 
-        Ok(LkpEnc { _dev: chardev_reg, _devmem: devmem})
+        Ok(LkpEnc { _dev: chardev_reg })
     }
 }
 
 impl Drop for LkpEnc {
     fn drop(&mut self) {
         pr_info!("lkp_enc module exit\n");
-        unsafe { bindings::iounmap(self._devmem as *mut c_void ) };
+        unsafe { bindings::iounmap(*DEVMEM.lock() as *mut c_void ) };
     }
 }
