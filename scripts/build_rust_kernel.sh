@@ -1,6 +1,8 @@
 #!/bin/sh
 
 # run this script at the root of your cloned linux kernel
+# this script will install the rust toolchain on your system
+# and then build linux kernel with rust enabled the rust toolchain
 
 PREFIX=/home/ubuntu/code
 
