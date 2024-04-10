@@ -1,29 +1,25 @@
-#!/bin/sh
-
-# run this script at the root of your cloned linux kernel
+#!/bin/bash
 
 PREFIX=/home/ubuntu/code
 
-sudo apt install clang llvm lld
+QEMU_BIN=${PREFIX}/qemu-8.2.1/build/qemu-system-x86_64
+NCPU=4
+MEMSIZE=8G
 
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+KNL_SRC=${PREFIX}/linux
+BZIMAGE=${KNL_SRC}/arch/x86/boot/bzImage
 
-. ${PREFIX}/.cargo/env
+BOOKWORM_IMAGE=${PREFIX}/image/bookworm.img
 
-rustup override set $(scripts/min-tool-version.sh rustc)
+# -nic user,model=rtl8139,hostfwd=tcp::5555-:23,hostfwd=tcp::5556-:8080
 
-cargo install --locked --version $(scripts/min-tool-version.sh bindgen) bindgen-cli
-
-rustup component add rust-src
-
-make defconfig rust.config
-
-make LLVM=1 -j8 CLIPPY=1
-
-make LLVM=1 -j8 rust-analyzer
-
-make LLVM=1 -j8 rustfmtcheck
-
-make LLVM=1 -j8 rustfmt
-
-make LLVM=1 -j8 rustdoc
+sudo ${QEMU_BIN} \
+        -m ${MEMSIZE} \
+        -smp ${NCPU} \
+        -kernel ${BZIMAGE} \
+        -append "console=ttyS0 root=/dev/sda net.ifnames=0" \
+        -drive file=${BOOKWORM_IMAGE},format=raw \
+        -net user,host=10.0.2.10,hostfwd=tcp:127.0.0.1:2222-:22 \
+        -net nic,model=e1000 \
+        -nographic \
+        -device lkp_enc
