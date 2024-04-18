@@ -1,5 +1,11 @@
 {
     "recommendations": [
-        "1yib.rust-bundle"
+        "1yib.rust-bundle",
+        "ms-vscode.cpptools-extension-pack",
+        "ms-vscode.makefile-tools",
+        "GitHub.copilot",
+        "DavidAnson.vscode-markdownlint",
+        "yzhang.markdown-all-in-one",
+        "ms-vscode-remote.vscode-remote-extensionpack"
     ]
 }
