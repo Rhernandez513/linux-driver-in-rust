@@ -2,7 +2,7 @@
 
 PREFIX=/home/ubuntu/code
 
-QEMU_BIN=${PREFIX}/qemu-8.2.1/build/qemu-system-x86_64
+QEMU_BIN=${PREFIX}/qemu/build/qemu-system-x86_64
 NCPU=4
 MEMSIZE=8G
 
@@ -23,3 +23,4 @@ sudo ${QEMU_BIN} \
         -net nic,model=e1000 \
         -nographic \
         -device lkp_enc
+
