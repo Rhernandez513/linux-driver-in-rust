@@ -27,9 +27,13 @@
 	"customizations": {
 		"vscode": {
 			"extensions": [
-				"rust-lang.rust-analyzer",
-				"serayuzgur.crates",
-				"tamasfe.even-better-toml"
+				"1yib.rust-bundle",
+				"ms-vscode.cpptools-extension-pack",
+				"ms-vscode.makefile-tools",
+				"GitHub.copilot",
+				"DavidAnson.vscode-markdownlint",
+				"yzhang.markdown-all-in-one",
+				"ms-vscode-remote.vscode-remote-extensionpack"
 			],
 			"settings": {
 				"rust-client.rust-analyzer": {

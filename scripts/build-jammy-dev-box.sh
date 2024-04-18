@@ -1,11 +1,12 @@
-#!/usr/bin/sh
+#!/usr/bin/sh -x
 
 # build-jammy-dev-box.sh
 # This script is used to setup a development environment for Ubuntu 22.04 (Jammy Jellyfish)
 # For building the Linux Kernel, QEMU from source code, and other development tools
 
 # Taskfile.dev
-sudo sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b /usr/local/bin
+# Optional
+# sudo sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b /usr/local/bin
 
 
 # Github Command Line Interface
