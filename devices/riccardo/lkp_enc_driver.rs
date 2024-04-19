@@ -1,16 +1,18 @@
 //! Rust HW9 driver module
-//! 
+//!
 //! This module is a Rust implementation of the HW9 driver module written in C.
 
 use core::result::Result::Ok;
-use kernel::sync::Mutex;
 use kernel::bindings;
+use kernel::chrdev;
+use kernel::file;
+use kernel::sync::Mutex;
 use kernel::user_ptr::UserSlicePtr;
 use kernel::{
-    ioctl::{_IOR, _IOW}, prelude::*, Module
+    ioctl::{_IOR, _IOW},
+    prelude::*,
+    Module,
 };
-use kernel::file;
-use kernel::chrdev;
 
 module! {
     type: LkpEnc,
@@ -27,9 +29,7 @@ const LKP_ENC_READ_STRING: u32 = _IOR::<&str>('q' as u32, 3);
 const DEVICE_BASE_PHYS_ADDR: u64 = 0xfebd1000;
 const SIZE: u64 = 4096;
 
-static DEVMEM: Mutex<usize> = unsafe {
-    Mutex::new(0)
-};
+static DEVMEM: Mutex<usize> = unsafe { Mutex::new(0) };
 
 struct LkpEnc {
     _dev: Pin<Box<chrdev::Registration<1>>>,
@@ -48,7 +48,7 @@ fn read_device(ptr: usize) -> Vec<u8> {
 
         if c == b'\0' {
             break;
-        }              
+        }
     }
 
     ret
@@ -66,12 +66,17 @@ fn write_device(ptr: usize, s: &[u8]) {
 
 #[vtable]
 impl file::Operations for LkpEnc {
-    fn open(_context: &Self::OpenData,_file: &file::File) -> Result<Self::Data> {
+    fn open(_context: &Self::OpenData, _file: &file::File) -> Result<Self::Data> {
         pr_info!("qemu file opened\n");
         Ok(())
     }
 
-    fn write(_data: Self::Data,_file: &file::File,reader: &mut impl kernel::io_buffer::IoBufferReader,_offset:u64,) -> Result<usize> {
+    fn write(
+        _data: Self::Data,
+        _file: &file::File,
+        reader: &mut impl kernel::io_buffer::IoBufferReader,
+        _offset: u64,
+    ) -> Result<usize> {
         pr_info!("qemu file written\n");
 
         match reader.read_all() {
@@ -80,22 +85,27 @@ impl file::Operations for LkpEnc {
                 // echo doesn't provide a null terminated string
                 let _ = s.try_push(b'\0');
                 write_device(*DEVMEM.lock(), &s);
-                
+
                 // echo will expect a different number of bytes written, adding 0 to the end
                 // is not expected and will return an error
                 Ok(s.len() - 1)
-            },
+            }
             Err(e) => {
                 pr_info!("Error reading string: {:?}", e);
-                
+
                 Ok(0)
             }
         }
     }
 
-    fn read(_data: Self::Data,_file: &file::File,writer: &mut impl kernel::io_buffer::IoBufferWriter,offset:u64,) -> Result<usize> {
+    fn read(
+        _data: Self::Data,
+        _file: &file::File,
+        writer: &mut impl kernel::io_buffer::IoBufferWriter,
+        offset: u64,
+    ) -> Result<usize> {
         pr_info!("qemu file read\n");
-    
+
         // If the offset is 0, it means we're starting to read from the beginning.
         // If the offset is greater than 0, in this simple case, we assume the message was already read,
         // and thus we return Ok(0) to indicate no more data is to be read.
@@ -110,48 +120,49 @@ impl file::Operations for LkpEnc {
         }
     }
 
-    fn ioctl(_data: <Self::Data as kernel::ForeignOwnable>::Borrowed<'_>,_file: &file::File,cmd: &mut file::IoctlCommand,) -> Result<i32> {
+    fn ioctl(
+        _data: <Self::Data as kernel::ForeignOwnable>::Borrowed<'_>,
+        _file: &file::File,
+        cmd: &mut file::IoctlCommand,
+    ) -> Result<i32> {
         pr_info!("qemu file ioctl\n");
         let io_number = cmd.raw().0;
         let ptr = cmd.raw().1;
-        let user_slice = unsafe { UserSlicePtr::new(ptr as _, SIZE as _)};
+        let user_slice = unsafe { UserSlicePtr::new(ptr as _, SIZE as _) };
 
         match io_number {
             LKP_ENC_WRITE_SEED => {
                 let seed: u32 = match user_slice.read_all() {
                     Ok(s) => {
-                        if s.len() > 1 {
+                        if s.len() >= 1 {
                             s[0] as u32
-                        }
-                        else {
+                        } else {
                             0
                         }
-                    },
+                    }
                     Err(e) => {
                         pr_info!("Error reading seed: {:?}", e);
 
                         0
                     }
                 };
-                
-                unsafe {bindings::iowrite32(seed, *DEVMEM.lock() as _);}
-            },
+
+                unsafe {
+                    bindings::iowrite32(seed, *DEVMEM.lock() as _);
+                }
+            }
             LKP_ENC_READ_STRING => {
                 let ret = read_device(*DEVMEM.lock());
 
                 let _ = user_slice.write_all(&ret);
-            },
-            LKP_ENC_WRITE_STRING => {
-                let string = user_slice.read_all();
-                
-                match string {
-                    Ok(s) => {
-                        write_device(*DEVMEM.lock(), &s);
-                    },
-                    Err(e) => {
-                        pr_info!("Error reading string: {:?}", e);
-                        return Ok(-1);
-                    }
+            }
+            LKP_ENC_WRITE_STRING => match user_slice.read_all() {
+                Ok(s) => {
+                    write_device(*DEVMEM.lock(), &s);
+                }
+                Err(e) => {
+                    pr_info!("Error reading string: {:?}", e);
+                    return Ok(-1);
                 }
             },
             _ => {
@@ -159,7 +170,7 @@ impl file::Operations for LkpEnc {
                 return Ok(-1);
             }
         }
-        
+
         Ok(0)
     }
 }
@@ -167,9 +178,9 @@ impl file::Operations for LkpEnc {
 impl Module for LkpEnc {
     fn init(name: &'static CStr, module: &'static ThisModule) -> Result<Self> {
         pr_info!("{} module init", name);
-        
+
         let addr = unsafe { bindings::ioremap(DEVICE_BASE_PHYS_ADDR, SIZE) };
-        
+
         // devmem know contains the address mapped in the CPU of the device
 
         let mut ptr = DEVMEM.lock();
@@ -195,6 +206,6 @@ impl Module for LkpEnc {
 impl Drop for LkpEnc {
     fn drop(&mut self) {
         pr_info!("lkp_enc module exit\n");
-        unsafe { bindings::iounmap(*DEVMEM.lock() as _ ) };
+        unsafe { bindings::iounmap(*DEVMEM.lock() as _) };
     }
 }
