@@ -40,7 +40,7 @@ struct LkpEnc {
 
 fn read_device(ptr: usize) -> Vec<u8> {
     let mut ret: Vec<u8> = Vec::new();
-    let bound = SIZE as usize;
+    let bound = (SIZE - 5) as usize;
 
     for i in 0..bound {
         let c: u8 = unsafe { bindings::ioread8((ptr + 4 + i) as _) as u8 };
@@ -55,10 +55,19 @@ fn read_device(ptr: usize) -> Vec<u8> {
 }
 
 fn write_device(ptr: usize, s: &[u8]) {
+    // avoid to write in memory otherwise not handled by the device
+    let device_bound:usize = (SIZE - 5) as usize;
+
     for (i, c) in s.iter().enumerate() {
         unsafe { bindings::iowrite8(*c, (ptr + 4 + i) as _) };
 
-        if i == (SIZE - 5) as usize || *c == b'\0' {
+        if *c == b'\0' {
+            break;
+        }
+
+        if i == device_bound {
+            // if the device bound is reached write a null terminator and break
+            unsafe { bindings::iowrite8(b'\0', (ptr + 4 + i) as _) };
             break;
         }
     }
@@ -67,7 +76,6 @@ fn write_device(ptr: usize, s: &[u8]) {
 #[vtable]
 impl file::Operations for LkpEnc {
     fn open(_context: &Self::OpenData, _file: &file::File) -> Result<Self::Data> {
-        pr_info!("qemu file opened\n");
         Ok(())
     }
 
@@ -77,8 +85,6 @@ impl file::Operations for LkpEnc {
         reader: &mut impl kernel::io_buffer::IoBufferReader,
         _offset: u64,
     ) -> Result<usize> {
-        pr_info!("qemu file written\n");
-
         match reader.read_all() {
             Ok(mut s) => {
                 // null terminate the string before writing it to the device
@@ -104,8 +110,6 @@ impl file::Operations for LkpEnc {
         writer: &mut impl kernel::io_buffer::IoBufferWriter,
         offset: u64,
     ) -> Result<usize> {
-        pr_info!("qemu file read\n");
-
         // If the offset is 0, it means we're starting to read from the beginning.
         // If the offset is greater than 0, in this simple case, we assume the message was already read,
         // and thus we return Ok(0) to indicate no more data is to be read.
@@ -125,7 +129,6 @@ impl file::Operations for LkpEnc {
         _file: &file::File,
         cmd: &mut file::IoctlCommand,
     ) -> Result<i32> {
-        pr_info!("qemu file ioctl\n");
         let io_number = cmd.raw().0;
         let ptr = cmd.raw().1;
         let user_slice = unsafe { UserSlicePtr::new(ptr as _, SIZE as _) };
@@ -134,7 +137,7 @@ impl file::Operations for LkpEnc {
             LKP_ENC_WRITE_SEED => {
                 let seed: u32 = match user_slice.read_all() {
                     Ok(s) => {
-                        if s.len() >= 1 {
+                        if !s.is_empty() {
                             s[0] as u32
                         } else {
                             0
