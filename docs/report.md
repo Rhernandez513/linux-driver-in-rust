@@ -1,10 +1,15 @@
 # Re-Implementing a Linux Kernel Driver in Rust
-
 ![Rust Tux](./images/rust-tux.png)
 
-- Riccardo Strina rstrin4@uic.edu 
-- Robert D. Hernandez rherna70@uic.edu
-- Simone Mannarino smanna8@uic.edu 
+- [Re-Implementing a Linux Kernel Driver in Rust](#re-implementing-a-linux-kernel-driver-in-rust)
+  - [Project Decision Log](#project-decision-log)
+  - [Development Stack](#development-stack)
+  - [Code Comparison](#code-comparison)
+  - [Runtime Results](#runtime-results)
+  - [Rust-for-Linux env setup](#rust-for-linux-env-setup)
+  - [Rust Driver Source Code](#rust-driver-source-code)
+  - [Resources](#resources)
+  - [References / Further Reading](#references--further-reading)
 
 Based partially on: [Olivier Pierre's device virtualization lab ](https://olivierpierre.github.io/virt-101/lab/03-building-qemu.html)
 
