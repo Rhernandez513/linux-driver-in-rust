@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -x
 
 # For use inside the rust-enabled kernel running the rust driver
 
