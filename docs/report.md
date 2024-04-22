@@ -1,6 +1,6 @@
 # Re-Implementing a Linux Kernel Driver in Rust
 
-![Rust Tux](rust-tux.png)
+![Rust Tux](./images/rust-tux.png)
 
 - Riccardo Strina rstrin4@uic.edu 
 - Robert D. Hernandez rherna70@uic.edu
@@ -31,11 +31,11 @@ Based partially on: [Olivier Pierre's device virtualization lab ](https://olivie
 
 ## Code Comparison
 
-![Rust code snippet](code-snippet.png)
+![Rust code snippet](./images/code-snippet.png)
 
 ## Runtime Results
 
-![Rust Driver Running](rust-driver-running.png)
+![Rust Driver Running](./images/rust-driver-running.png)
 
 ## Rust-for-Linux env setup
 
