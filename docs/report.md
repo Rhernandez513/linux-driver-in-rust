@@ -1,3 +1,68 @@
+# Re-Implementing a Linux Kernel Driver in Rust
+![Rust Tux](./images/rust-tux.png)
+
+- [Re-Implementing a Linux Kernel Driver in Rust](#re-implementing-a-linux-kernel-driver-in-rust)
+  - [Project Decision Log](#project-decision-log)
+  - [Development Stack](#development-stack)
+  - [Code Comparison](#code-comparison)
+  - [Runtime Results](#runtime-results)
+  - [Rust-for-Linux env setup](#rust-for-linux-env-setup)
+  - [Rust Driver Source Code](#rust-driver-source-code)
+  - [Resources](#resources)
+  - [References / Further Reading](#references--further-reading)
+
+Based partially on: [Olivier Pierre's device virtualization lab ](https://olivierpierre.github.io/virt-101/lab/03-building-qemu.html)
+
+## Project Decision Log
+
+- Use QEMU 8.2.1
+- Use Github for collaboration and WhatsApp for real time communication
+- Provide written markdown for setting up development environment, compiling, running RustC code
+- Develop a RustC version of HW9
+
+## Development Stack
+
+- Ubuntu 22.04 LTS
+- [QEMU 8.2.1](https://github.com/qemu/qemu/tree/v8.2.1)
+- [Linux Kernel v6.3.0, Rust-for-Linux/linux:rust](https://github.com/Rust-for-Linux/linux/tree/rust)
+- RustC v1.71
+- BindGen: https://github.com/rust-lang/rust-bindgen 
+- LLVM: https://llvm.org/ 
+- Clang: https://clang.llvm.org/
+- LLD: https://lld.llvm.org/
+- rust-analyzer: https://rust-analyzer.github.io/ 
+- Rust Format : https://github.com/rust-lang/rustfmt 
+- RustDoc: https://doc.rust-lang.org/rustdoc/what-is-rustdoc.html 
+
+## Code Comparison
+
+![Rust code snippet](./images/code-snippet.png)
+
+## Runtime Results
+
+![Rust Driver Running](./images/rust-driver-running.png)
+
+## Rust-for-Linux env setup
+
+> Module/driver support written in Rust was integrated in kernel 6.1, all the concepts written here are applicable into any version greater or equal to 6.1
+
+1. Download the fork of linux from Rust-for-Linux: `git clone --depth=1 https://github.com/Rust-for-Linux/linux.git` 
+2. Install clang, llvm and lld: `sudo apt install clang llvm lld`
+3. Install Rust: `curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh`
+4. Update the path with `source ~/.cargo/env` or `source $HOME/.cargo/env`
+5. Set the required rust version used for the current kernel with `rustup override set $(scripts/min-tool-version.sh rustc)`
+6. Download bindgen with `cargo install --force --locked --version $(scripts/min-tool-version.sh bindgen) bindgen`
+7. Run this command to install reaquired rust elements `rustup component add rust-src`
+8. Go into linux folder and run the command `make LLVM=1 defconfig rust.config`
+9. Proceed to compile the kernel with `make LLVM=1 -j4 CLIPPY=1`, where clippy is the rust linter
+10. Enable support for rust-analyzer with `make LLVM=1 -j4 rust-analyzer`
+11. To check whether the rust code written in the kernel is correctly formatted `make LLVM=1 -j4 rustfmtcheck`
+12. To automatically format the rust code use `make LLVM=1 -j4 rustfmt`
+13. To generate documentation run `make LLVM=1 -j4 rustdoc` for ease of development. To browse it go to rust/doc/kernel/index.html
+
+## Rust Driver Source Code
+
+```rust
 //! Rust HW9 driver module
 //!
 //! This module is a Rust implementation of the HW9 driver module written in C.
@@ -212,3 +277,14 @@ impl Drop for LkpEnc {
         unsafe { bindings::iounmap(*DEVMEM.lock() as _) };
     }
 }
+
+```
+
+## Resources
+
+- [Private Github Repository](https://github.com/Rhernandez513/linux-driver-in-rust)
+
+## References / Further Reading
+
+- [Writing Linux Kernel Modules In Rust](https://www.linuxfoundation.org/webinars/writing-linux-kernel-modules-in-rust)
+- [Setting Up an Environment for Writing Linux Kernel Modules in Rust](https://www.linuxfoundation.org/webinars/setting-up-an-environment-for-writing-linux-kernel-modules-in-rust?hsLang=en)
