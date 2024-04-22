@@ -17,7 +17,7 @@ use kernel::{
 module! {
     type: LkpEnc,
     name: "lkp_enc",
-    author: "Riccardo Strina",
+    author: "Riccardo Strina, Robert Hernandez, Simone Mannarino",
     description: "HW9... but in Rust!",
     license: "GPL",
 }
