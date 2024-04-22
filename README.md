@@ -1,45 +1,15 @@
-# linux-driver-in-rust
-Used for CS 594 Linux Kernel Programming at the University of Illinois at Chicago
+# Re-Implementing a Linux Kernel Driver in Rust
+CS 594 Linux Kernel Programming at the University of Illinois at Chicago
 
-![Build and Test Demo](/images/build_and_test_demo.jpg)
-
-## Setup
-Install Task for all local users
-```sh
-sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b /usr/local/bin
-```
-
-To build the Rust program
-
-```sh
-task build
-```
-
-To run the compiled Rust program
-
-```sh
-task run
-```
-
-To clean up and remove the compiled executable
-
-```sh
-task clean
-```
-
-To run the tests:
-
-```sh
-task test
-```
+![Rust Driver Running](/images/rust-driver-running.jpg)
 
 ## Rust-for-Linux env setup
-1. Download the fork of linux from Rust-for-Linux: `git clone --depth=1 https://github.com/Rust-for-Linux/linux.git` 
 > Module/driver support written in Rust was integrated in kernel 6.1, all the concepts written here are applicable into any version greater or equal to 6.1
-3. Install clang, llvm and lld: `sudo apt install clang llvm lld`
-4. Install Rust: `curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh`
-5. Update the path with `source ~/.cargo/env` or `source $HOME/.cargo/env`
-6. Set the required rust version used for the current kernel with `rustup override set $(scripts/min-tool-version.sh rustc)`
+1. Download the fork of linux from Rust-for-Linux: `git clone --depth=1 https://github.com/Rust-for-Linux/linux.git` 
+2. Install clang, llvm and lld: `sudo apt install clang llvm lld`
+3. Install Rust: `curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh`
+4. Update the path with `source ~/.cargo/env` or `source $HOME/.cargo/env`
+5. Set the required rust version used for the current kernel with `rustup override set $(scripts/min-tool-version.sh rustc)`
 6. Download bindgen with `cargo install --locked --version $(scripts/min-tool-version.sh bindgen) bindgen-cli`
 7. Run this command to install reaquired rust elements `rustup component add rust-src`
 8. Go into linux folder and run the command `make LLVM=1 defconfig rust.config`
