@@ -5,15 +5,9 @@
 #include <stdlib.h>
 #include <sys/ioctl.h>
 
-// #define LKP_ENC_READ_SEED 0x0
-
-#define LKP_ENC_WRITE_SEED 0x40047101
-#define LKP_ENC_READ_STRING 0x80107103
-#define LKP_ENC_WRITE_STRING 0x40107102
-
-// 289:[    1.336245] lkp_enc: LKP_ENC_WRITE_SEED: 1074032897
-// 290:[    1.336245] lkp_enc: LKP_ENC_READ_STRING: 2148561155
-// 291:[    1.336245] lkp_enc: LKP_ENC_WRITE_STRING: 1074819330
+#define LKP_ENC_READ_SEED 0x80047102
+#define LKP_ENC_WRITE_STRING 0x40087103
+#define LKP_ENC_READ_STRING 0x80087104
 
 int main(int argc, char *argv[]) {
     if(argc != 3) {
