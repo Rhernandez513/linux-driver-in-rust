@@ -26,9 +26,11 @@ cargo install --locked --version $(scripts/min-tool-version.sh bindgen) bindgen-
 
 rustup component add rust-src
 
-echo "You will need to enable the LKP_ENC device driver in the menuconfig Device Drivers -> Misc devices -> LKP_ENC"
+make defconfig rust.config
 
-make defconfig rust.config menuconfig
+echo "Next, you will need to enable the LKP_ENC device driver in the menuconfig Device Drivers -> Misc devices -> LKP_ENC"
+
+make menuconfig
 
 make LLVM=1 -j16 CLIPPY=1
 
