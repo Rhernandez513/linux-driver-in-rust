@@ -1,3 +1,7 @@
+The following draft code was generated using CHATGPT3.5
+It should not be exected to compile and is for info only
+
+```rust
 use linux_kernel_module::{kernel::file_operations::FileOp, prelude::*};
 use spin::RwLock;
 
@@ -121,3 +125,4 @@ module! {
     description: b"LKP Enc Driver",
     license: b"GPL",
 }
+```
