@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <sys/ioctl.h>
 
+#define LKP_ENC_WRITE_SEED 0x40047101
 #define LKP_ENC_READ_SEED 0x80047102
 #define LKP_ENC_WRITE_STRING 0x40087103
 #define LKP_ENC_READ_STRING 0x80087104
