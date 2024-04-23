@@ -1,4 +1,12 @@
-#!/bin/sh
+#!/bin/sh -x
+
+##########################
+# build_rust_kernel.sh #
+##########################
+#
+# This script is used to build the Linux Kernel with Rust enabled
+#
+
 
 # run this script at the root of your cloned linux kernel
 # this script will install the rust toolchain on your system
@@ -18,14 +26,16 @@ cargo install --locked --version $(scripts/min-tool-version.sh bindgen) bindgen-
 
 rustup component add rust-src
 
-make defconfig rust.config
+echo "You will need to enable the LKP_ENC device driver in the menuconfig Device Drivers -> Misc devices -> LKP_ENC"
 
-make LLVM=1 -j8 CLIPPY=1
+make defconfig rust.config menuconfig
 
-make LLVM=1 -j8 rust-analyzer
+make LLVM=1 -j16 CLIPPY=1
 
-make LLVM=1 -j8 rustfmtcheck
+make LLVM=1 -j16 rust-analyzer
 
-make LLVM=1 -j8 rustfmt
+make LLVM=1 -j16 rustfmtcheck
 
-make LLVM=1 -j8 rustdoc
+make LLVM=1 -j16 rustfmt
+
+make LLVM=1 -j16 rustdoc
