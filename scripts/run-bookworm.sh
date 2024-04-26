@@ -1,4 +1,11 @@
-#!/bin/bash
+#!/bin/sh -x
+
+##########################
+# run-bookworm.sh #
+##########################
+#
+# this script is for launching the bookworm image in QEMU
+#
 
 PREFIX=/home/ubuntu/code
 
