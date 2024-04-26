@@ -37,9 +37,9 @@ index 000000000000..41908afadbcc
 --- /dev/null
 +++ b/drivers/misc/lkp_enc.rs
 @@ -0,0 +1,214 @@
-+//! Rust HW9 driver module
++//! Rust driver module
 +//!
-+//! This module is a Rust implementation of the HW9 driver module written in C.
++//! This module is a Rust implementation of a driver for an encryption device written in C.
 +
 +use core::result::Result::Ok;
 +use kernel::bindings;
@@ -57,7 +57,7 @@ index 000000000000..41908afadbcc
 +    type: LkpEnc,
 +    name: "lkp_enc",
 +    author: "Riccardo Strina",
-+    description: "HW9... but in Rust!",
++    description: "Driver for encryption device but in Rust!",
 +    license: "GPL",
 +}
 +
