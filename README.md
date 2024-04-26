@@ -1,7 +1,7 @@
 # Re-Implementing a Linux Kernel Driver in Rust
 CS 594 Linux Kernel Programming at the University of Illinois at Chicago
 
-![Rust Driver Running](/images/rust-driver-running.jpg)
+![Rust Driver Running](docs/images/rust-driver-running.png)
 
 ## Rust-for-Linux env setup
 > Module/driver support written in Rust was integrated in kernel 6.1, all the concepts written here are applicable into any version greater or equal to 6.1
