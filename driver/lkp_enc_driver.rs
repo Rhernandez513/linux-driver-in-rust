@@ -1,6 +1,6 @@
-//! Rust HW9 driver module
+//! Rust driver module
 //!
-//! This module is a Rust implementation of the HW9 driver module written in C.
+//! This module is a Rust implementation of a driver for an encryption device written in C.
 
 use core::result::Result::Ok;
 use kernel::bindings;
@@ -18,7 +18,7 @@ module! {
     type: LkpEnc,
     name: "lkp_enc",
     author: "Riccardo Strina, Robert Hernandez, Simone Mannarino",
-    description: "HW9... but in Rust!",
+    description: "Driver for encryption device but in Rust!",
     license: "GPL",
 }
 
