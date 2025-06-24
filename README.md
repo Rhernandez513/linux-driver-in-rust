@@ -1,5 +1,6 @@
 # Re-Implementing a Linux Kernel Driver in Rust
-CS 594 Linux Kernel Programming at the University of Illinois at Chicago
+
+Also see parent repository: CS 594 Linux Kernel Programming @UIC <https://github.com/Rhernandez513/cs-594>
 
 ![Rust Driver Running](docs/images/rust-driver-running.png)
 
