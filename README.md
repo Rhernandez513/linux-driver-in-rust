@@ -1,4 +1,4 @@
-# Re-Implementing a Linux Kernel Driver in Rust
+# Implementing a Linux Kernel Driver in Rust
 
 Also see parent repository: CS 594 Linux Kernel Programming @UIC <https://github.com/Rhernandez513/cs-594>
 
